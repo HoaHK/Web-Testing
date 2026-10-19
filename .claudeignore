@@ -1,0 +1,15 @@
+﻿node_modules/
+dist/
+build/
+playwright-report/
+test-results/
+blob-report/
+.qa-pipeline/raw/
+.qa-pipeline/reports/
+*.har
+*.trace.zip
+*.png
+*.webm
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
