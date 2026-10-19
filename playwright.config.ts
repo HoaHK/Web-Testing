@@ -11,15 +11,24 @@ export default defineConfig({
     ['junit', { outputFile: 'test-results/junit.xml' }],
   ],
   use: {
-    baseURL: process.env.BASE_URL ?? 'https://example.com',
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
-    ...devices['Desktop Chrome'],
   },
   projects: [
     {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      name: 'web',
+      testDir: './tests/web',
+      use: {
+        ...devices['Desktop Chrome'],
+        baseURL: process.env.BASE_URL ?? 'https://boreas.zenkiet.dev/online-ordering/staging/',
+        // The HTTPS app calls its API on a private LAN address; Chrome blocks that without this permission.
+        permissions: ['local-network-access'],
+      },
+    },
+    {
+      name: 'api',
+      testDir: './tests/api',
+      use: { baseURL: process.env.API_BASE_URL ?? 'http://192.168.1.194:6969' },
     },
   ],
 });

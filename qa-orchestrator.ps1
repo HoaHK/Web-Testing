@@ -1,5 +1,6 @@
 ﻿param(
     [string]$FeatureName = "Checkout_Flow",
+    [ValidateSet("all", "web", "api")]
     [string]$Platform = "all",
     [string]$Mode = "full",
     [int]$MaxRetries = 3
@@ -19,16 +20,14 @@ if (!(Test-Path "CLAUDE.md") -and (Test-Path "AGENTS.md")) {
 
 function Get-TargetSpecs {
     switch ($Platform) {
-        "android" { return ".qa-pipeline/specs/android-e2e.md" }
         "web"     { return ".qa-pipeline/specs/web-e2e.md" }
         "api"     { return ".qa-pipeline/specs/api-workflow.md" }
-        default   { return @(".qa-pipeline/specs/android-e2e.md", ".qa-pipeline/specs/web-e2e.md", ".qa-pipeline/specs/api-workflow.md") }
+        default   { return @(".qa-pipeline/specs/web-e2e.md", ".qa-pipeline/specs/api-workflow.md") }
     }
 }
 
 function Get-PlaywrightCmd {
     switch ($Platform) {
-        "android" { return "npx playwright test --project=android" }
         "web"     { return "npx playwright test --project=web" }
         "api"     { return "npx playwright test --project=api" }
         default   { return "npx playwright test" }
@@ -41,7 +40,7 @@ $PwCmd = Get-PlaywrightCmd
 # --- STEP 1A: AUTONOMOUS CRAWL ---
 if ($Mode -eq "full" -or $Mode -eq "crawl-only") {
     Write-Host ">>> [STEP 1A] ANTIGRAVITY: Autonomous Deep Crawl ($FeatureName | $Platform)" -ForegroundColor Cyan
-    agy --dangerously-skip-permissions -p "Scope: Feature '$FeatureName', Platform '$Platform'. Autonomously traverse all reachable screens, features, and dialogs. Persist compact pipe-delimited tables into: Android (.qa-pipeline/specs/android-e2e.md), Web (.qa-pipeline/specs/web-e2e.md), API (.qa-pipeline/specs/api-workflow.md). Tag rows with Src='Auto'."
+    agy --dangerously-skip-permissions -p "Scope: Feature '$FeatureName', Platform '$Platform'. Autonomously traverse all reachable screens, features, and dialogs. Persist compact pipe-delimited tables into: Web (.qa-pipeline/specs/web-e2e.md), API (.qa-pipeline/specs/api-workflow.md). Tag rows with Src='Auto'."
 }
 
 # --- STEP 1B: GUIDED CRAWL ---

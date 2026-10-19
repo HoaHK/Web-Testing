@@ -1,13 +1,23 @@
 import { test as base, expect } from '@playwright/test';
-import { HomePage } from '../pages/home.page';
+import { StoreMenuPage } from '../pages/store-menu.page';
 
 type PageFixtures = {
-  homePage: HomePage;
+  /** Store page freshly loaded; the order type dialog is open. */
+  storeMenu: StoreMenuPage;
+  /** Store page with Pickup chosen and the default pickup time confirmed. */
+  pickupMenu: StoreMenuPage;
 };
 
 export const test = base.extend<PageFixtures>({
-  homePage: async ({ page }, use) => {
-    await use(new HomePage(page));
+  storeMenu: async ({ page }, use) => {
+    const storeMenu = new StoreMenuPage(page);
+    await storeMenu.goto();
+    await use(storeMenu);
+  },
+  pickupMenu: async ({ storeMenu }, use) => {
+    await storeMenu.choosePickup();
+    await storeMenu.confirmPickupTime();
+    await use(storeMenu);
   },
 });
 
