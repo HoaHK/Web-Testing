@@ -11,13 +11,16 @@ export function processRequest(
   return request.post(PROCESS_REQUEST_PATH, { form: { targetAction, param, token } });
 }
 
-export async function expectSuccessEnvelope(response: APIResponse): Promise<Envelope> {
+/** `detail` defaults to null, which is what every action except LoadBestSoldByItems returns. */
+export async function expectSuccessEnvelope(response: APIResponse, detail: unknown = null): Promise<Envelope> {
   expect(response.status()).toBe(200);
   const envelope = (await response.json()) as Envelope;
   expect(envelope).toMatchObject({
     Result: 'SUCCESS',
+    Detail: detail,
     VersionDate: expect.any(String),
     Version: expect.any(Number),
+    ReturnCode: null,
     FailMessage: [],
   });
   expect(envelope.Data).toEqual(expect.arrayContaining([{ Key: 'RESULT', Value: expect.any(String) }]));

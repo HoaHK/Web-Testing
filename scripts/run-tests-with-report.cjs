@@ -39,9 +39,16 @@ function openBrowser(url) {
 }
 
 async function main() {
-  const testExitCode = await runPlaywright(['test', '--headed', ...process.argv.slice(2)], {
+  // Headed run + live report server are for local use only; CI stays headless and exits with the test result.
+  const isCI = Boolean(process.env.CI);
+  const testExitCode = await runPlaywright(['test', ...(isCI ? [] : ['--headed']), ...process.argv.slice(2)], {
     env: { ...process.env, PLAYWRIGHT_HTML_OPEN: 'never' },
   });
+
+  if (isCI) {
+    process.exitCode = testExitCode;
+    return;
+  }
 
   let reportProcess;
   let reportOpened = false;

@@ -1,4 +1,8 @@
+import { existsSync } from 'node:fs';
 import { defineConfig, devices } from '@playwright/test';
+
+// Local test data (payment cards, customer info); .env is gitignored.
+if (existsSync('.env')) process.loadEnvFile('.env');
 
 export default defineConfig({
   testDir: './tests',

@@ -25,19 +25,20 @@ test('API-01 get-store lists the QA store', async ({ request }) => {
   expect(stores).toContainEqual(expect.objectContaining({ token: STORE.token, name: STORE.name }));
 });
 
-const STORE_LOAD_ACTIONS = [
+const STORE_LOAD_ACTIONS: { step: string; action: string; param: string; detail?: unknown }[] = [
   { step: 'API-02', action: 'LoadStoreConfigForWeb', param: '' },
   { step: 'API-04', action: 'GetAllMixMatchOffers', param: '' },
   { step: 'API-05', action: 'ListPublicCoupons', param: '' },
   { step: 'API-06', action: 'LoadTimePriceDetails', param: '' },
   { step: 'API-07', action: 'LoadDealsNotes', param: '' },
   { step: 'API-08', action: 'LoadItemBasicInMenu', param: 'app=pickup' },
-  { step: 'API-09', action: 'LoadBestSoldByItems', param: '67' },
+  // Spec: Detail is a string for this action (currently "SaleReceiptType is missing").
+  { step: 'API-09', action: 'LoadBestSoldByItems', param: '67', detail: expect.any(String) },
 ];
 
-for (const { step, action, param } of STORE_LOAD_ACTIONS) {
+for (const { step, action, param, detail = null } of STORE_LOAD_ACTIONS) {
   test(`${step} ${action} returns a SUCCESS envelope`, async ({ request }) => {
-    await expectSuccessEnvelope(await processRequest(request, action, param));
+    await expectSuccessEnvelope(await processRequest(request, action, param), detail);
   });
 }
 

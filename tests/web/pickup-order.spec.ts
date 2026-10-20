@@ -4,6 +4,10 @@ import { resultOf, waitForAction, waitForActionResponse, type Envelope, type Men
 
 const SELECTED = /!bg-primary/;
 
+// PB-02: the staging API stalls when several page loads for the same store start at once,
+// so this file's tests run one after another in a single worker.
+test.describe.configure({ mode: 'default' });
+
 test.describe('WEB-V01 Order Type dialog', () => {
   test('opens on load with PICK UP, DELIVERY and OK', async ({ storeMenu }) => {
     const { orderType } = storeMenu;
@@ -184,7 +188,7 @@ test.describe('WEB-V04 Item detail dialog', () => {
 
     await item.addOns.click();
     await expect(item.back).toBeVisible();
-    await expect(item.root.getByRole('button', { name: /^Allergy- NO NUTS for \$/ })).toBeVisible();
+    await expect(item.root.getByRole('button', { name: /^\d+ Allergy- NO NUTS for \$/ })).toBeVisible();
     await expect(item.addOns).toBeHidden();
 
     await item.back.click();
